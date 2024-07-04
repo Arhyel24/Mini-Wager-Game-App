@@ -16,13 +16,16 @@ import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState({ value: '', error: '' })
+  const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
 
   const onSignUpPressed = async () => {
+    setLoading(true)
     const nameError = nameValidator(name.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
@@ -36,7 +39,7 @@ export default function RegisterScreen({ navigation }) {
     try {
       await createUserWithEmailAndPassword(auth, email.value, password.value)
       const user = auth.currentUser
-      // console.log(user)
+      console.log(user)
       // console.log(user.email, name)
 
       if (user) {
@@ -44,6 +47,7 @@ export default function RegisterScreen({ navigation }) {
           email: user.email,
           name: name.value,
         })
+        setLoading(false)
         toast('User Registered successfully!!')
 
         navigation.reset({
@@ -54,6 +58,7 @@ export default function RegisterScreen({ navigation }) {
       console.log('User registered successfully!!')
     } catch (error) {
       console.log(error)
+      setLoading(false)
       toast('Failed to Register!!')
     }
   }
@@ -61,6 +66,11 @@ export default function RegisterScreen({ navigation }) {
   return (
     <Background>
       <BackButton goBack={navigation.goBack} />
+      <Spinner
+        visible={loading}
+        textContent={'Loading...'}
+        textStyle={styles.spinnerTextStyle}
+      />
       <Logo />
       <Header>Create Account</Header>
       <TextInput
@@ -114,6 +124,10 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  spinnerTextStyle: {
+    color: '#FFF',
+    marginTop: 100,
+  },
   row: {
     flexDirection: 'row',
     marginTop: 4,

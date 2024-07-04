@@ -15,12 +15,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { auth } from '../components/firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
+  const [loading, setLoading] = useState(false)
 
   const onLoginPressed = async () => {
+    setLoading(true)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     if (emailError || passwordError) {
@@ -32,6 +35,7 @@ export default function LoginScreen({ navigation }) {
     try {
       await signInWithEmailAndPassword(auth, email.value, password.value)
       console.log('User logged in successfully!!')
+      setLoading(false)
       toast('User logged in successfully!!')
       navigation.reset({
         index: 0,
@@ -39,6 +43,7 @@ export default function LoginScreen({ navigation }) {
       })
     } catch (error) {
       console.log(error.message)
+      setLoading(false)
       toast('Failed to login!!')
     }
   }
@@ -46,6 +51,11 @@ export default function LoginScreen({ navigation }) {
   return (
     <Background>
       <BackButton goBack={navigation.goBack} />
+      <Spinner
+        visible={loading}
+        textContent={'Loading...'}
+        textStyle={styles.spinnerTextStyle}
+      />
       <Logo />
       <Header>Welcome back.</Header>
       <TextInput
@@ -90,6 +100,10 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  spinnerTextStyle: {
+    color: '#FFF',
+    marginTop: 100,
+  },
   forgotPassword: {
     width: '100%',
     alignItems: 'flex-end',

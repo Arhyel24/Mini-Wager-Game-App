@@ -10,9 +10,9 @@ export default function StartScreen({ navigation }) {
   return (
     <Background>
       <Logo />
-      <Header>Login Template</Header>
+      <Header>Mini Wager App</Header>
       <Paragraph>
-        The easiest way to start with your amazing application.
+        The easiest way to complete in amazing challenges with your friends and family.
       </Paragraph>
       <Button
         mode="contained"

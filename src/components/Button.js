@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     paddingVertical: 2,
   },
-  text: {
+  buttontext: {
     fontWeight: 'bold',
     fontSize: 15,
     lineHeight: 26,
