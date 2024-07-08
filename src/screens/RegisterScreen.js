@@ -42,6 +42,10 @@ export default function RegisterScreen({ navigation }) {
       console.log(user)
       // console.log(user.email, name)
 
+      updateProfile(auth.currentUser, {
+        displayName: name.value,
+      })
+
       if (user) {
         await setDoc(doc(db, 'Users', user.uid), {
           email: user.email,

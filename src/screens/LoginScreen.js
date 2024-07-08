@@ -34,7 +34,6 @@ export default function LoginScreen({ navigation }) {
 
     try {
       await signInWithEmailAndPassword(auth, email.value, password.value)
-      console.log('User logged in successfully!!')
       setLoading(false)
       toast('User logged in successfully!!')
       navigation.reset({
@@ -42,7 +41,6 @@ export default function LoginScreen({ navigation }) {
         routes: [{ name: 'Dashboard' }],
       })
     } catch (error) {
-      console.log(error.message)
       setLoading(false)
       toast('Failed to login!!')
     }

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Text, StyleSheet, View } from 'react-native'
+import { Text, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Background from '../components/Background-sm'
+import { auth, db } from '../components/firebase'
+import { collection, doc, setDoc, getDoc } from 'firebase/firestore'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Header from '../components/Header'
@@ -8,74 +10,123 @@ import BackButton from '../components/BackButton'
 import Spinner from 'react-native-loading-spinner-overlay'
 import { theme } from '../core/theme'
 import { Pedometer } from 'expo-sensors'
-import CircularProgress from '../components/CircularProgress'
 import LeaderboardCard from '../components/LeaderboardCard'
-import ChallengeCard from '../components/ChallengeCard'
+// import CircularProgress from 'react-native-circular-progress-indicator'
+import CircularProgressBar from '../components/CIrcularProgressBar'
 
 const ChallengeScreen = ({ route, navigation }) => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [stepcount, updateStepcount] = useState(0)
-  const [pedometeravailabilty, setpedometeravailability] = useState('')
+  const [item, setItem] = useState(0)
+  const [userDetails, setUserDetails] = useState(null)
+  const [pedometeravailabilty, setpedometeravailability] = useState(null)
+  const [finished, setFinished] = useState(false)
+  const [pedometerStarted, setPedometerStarted] = useState(false)
+  const [remainingTime, setRemainingTime] = useState(0)
+
+  const challengesRef = collection(db, 'Challenges')
 
   var dist = stepcount / 13000
   var distanceCovered = dist.toFixed(4)
 
-  var cal = distanceCovered * 60
-  var caloriesBurnt = cal.toFixed(4)
+  const key = route.params
 
-  const item = route.params
+  // const vetUser = async () => {
+  //   const nameQuery = query(
+  //     challengesRef,
+  //     where('userId', '==', userDetails.uid)
+  //   )
+  //   const snapshot = await nameQuery.get()
+  //   const userData = snapshot.docs.map((doc) => doc.data())
+  //   console.log(userData)
+  //   if (userData.length > 0) {
+  //     // if documents were found
+  //     setFinished(true) // set finished to true in state
+  //   } else {
+  //     setFinished(false)
+  //   }
+  // }
 
-  //   console.log(props)
-  //   console.log(navigation)
+  const fetchChallenge = async () => {
+    const docRef = doc(db, 'Challenges', key)
+    const docSnap = await getDoc(docRef)
 
-  const subscribe = () => {
-    const subscription = Pedometer.watchStepCount((result) => {
-      updateStepcount(result.steps)
-    })
+    if (docSnap.exists()) {
+      setItem(docSnap.data())
+    } else {
+      toast('No internet, please try again!!')
+    }
+
+    await Pedometer.requestPermissionsAsync()
+
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchChallenge()
+    const userData = auth.currentUser
+    // console.log(userData)
+    if (userData) {
+      setUserDetails(userData)
+    }
+  }, [])
+
+  // useEffect(() => {
+  //   let timer
+  //   if (pedometerStarted) {
+  //     Pedometer.watchStepCount(async (result) => {
+  //       updateStepcount(result.steps)
+  //     })
+  //     timer = setInterval(() => {
+  //       setRemainingTime((prevTime) => prevTime - 1000)
+  //     }, 1000)
+  //   } else {
+  //     clearInterval(timer)
+  //     // Pedometer.clearWatch()
+  //     saveSteps
+  //   }
+  //   return () => clearInterval(timer)
+  // }, [pedometerStarted])
+
+  const startPedometer = async () => {
+    if (pedometeravailabilty) {
+      toast('Pedometer is available')
+
+      setPedometerStarted(true)
+      setRemainingTime(300000)
+    } else {
+      toast('Pedometer is not available')
+    }
+  }
+
+  const stopPedometer = async () => {
+    // Pedometer.clearWatch()
+    setPedometerStarted(false)
+    saveSteps()
   }
 
   Pedometer.isAvailableAsync().then(
     (result) => {
-      setpedometeravailability(String(result))
+      setpedometeravailability(result)
     },
     (error) => {
-      setpedometeravailability(error)
+      toast('Please restart the app')
+      // setpedometeravailability(error)
     }
   )
 
-  const data = [
+  const saveSteps = async () => {
+    await setDoc(doc(challengesRef, key), {
+      userId: userDetails.uid,
+      stepcount,
+    })
+  }
+
+  const cdata = [
     { name: 'Alice', steps: 15000 },
     { name: 'Bob', steps: 13000 },
     { name: 'Charlie', steps: 12000 },
   ]
-
-  //   if (pedometeravailabilty) {
-  //     useEffect(() => {
-  //       subscribe()
-  //     }, [])
-  //   } else {
-  //     toast('Pedometer is not available')
-  //   }
-
-  //   const CircularProgress = () => {
-  //     // Replace this with your actual circular progress bar component implementation
-  //     return (
-  //       <CircularProgressBar
-  //         value={stepcount}
-  //         maxValue={250}
-  //         radius={150}
-  //         textColor={'#ddd'}
-  //         activeStrokeColor={'#f39c12'}
-  //         inActiveStrokeColor={'#9859B6'}
-  //         inActiveStrokeOpacity={0.5}
-  //         inActiveStrokeWidth={30}
-  //         activeStrokeWidth={30}
-  //         title="Step Count"
-  //         titleColor={'#ECF0F1'}
-  //         titleStyle={{ fontWeight: 'bold' }}
-  //       />
-  //     )
-  //   }
 
   return (
     <Background>
@@ -85,15 +136,92 @@ const ChallengeScreen = ({ route, navigation }) => {
         textContent={'Loading...'}
         textStyle={styles.spinnerTextStyle}
       />
-      <Header>CHallenge Details</Header>
-      <ChallengeCard
-        item={item}
-        buttonText="Start Challenge"
-        onPress={() => alert(`${item.title} Started!`)}
-      />
+      <Header>Challenge Details</Header>
+      <View style={styles.cardContainer}>
+        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text style={styles.cardDescription}>{item.description}</Text>
+        <View style={styles.progressContainer}>
+          {/* <CircularProgress
+            value={stepcount}
+            maxValue={item.steps}
+            radius={150}
+            textColor={'#ddd'}
+            activeStrokeColor={'#f39c12'}
+            inActiveStrokeColor={'#9859B6'}
+            inActiveStrokeOpacity={0.5}
+            inActiveStrokeWidth={30}
+            activeStrokeWidth={30}
+            title="Steps Count"
+            titleColor={'#ECF0F1'}
+            titleStyle={{ fontWeight: 'bold' }}
+          /> */}
+          <CircularProgressBar
+            selectedValue={stepcount}
+            maxValue={item.steps}
+            radius={100}
+            activeStrokeColor="#0f4fff"
+            withGradient
+          />
+        </View>
+        <View style={styles.detailsContainer}>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailText}>
+              Distance Covered: {item.distanceCovered || 0}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailText}>Entry Fee: {item.entry_fee}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailText}>
+              1st Place Prize: {item.amount_to_win}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailText}>Status: {item.status}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailText}>Steps Needed: {item.steps}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailText}>
+              Time to Complete: {item.time_to_complete}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailText}>
+              Date Posted: {item.date_posted}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailText}>End Date: {item.end_date}</Text>
+          </View>
+        </View>
+        {finished ? (
+          <TouchableOpacity
+            style={styles.cardButton}
+            onPress={startPedometer}
+            disabled={true}
+          >
+            <Text style={styles.buttonText}>Challenge Completed</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.cardButton}
+            onPress={startPedometer}
+            disabled={pedometerStarted ? true : false}
+          >
+            <Text style={styles.buttonText}>
+              {!pedometerStarted
+                ? 'Start Challenge'
+                : `${remainingTime / 1000} mins Remaining`}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       <View>
-        <LeaderboardCard data={data} />
+        <LeaderboardCard data={cdata} />
       </View>
     </Background>
   )
@@ -147,6 +275,56 @@ const styles = StyleSheet.create({
   detailItem: {
     width: '48%', // Adjust this width as needed to fit two columns
     marginBottom: 10,
+  },
+  cardContainer: {
+    backgroundColor: '#FDFDFD', // Milk-like color
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    padding: 20,
+    margin: 10,
+    borderColor: '#ECECEC', // Light border color for better visibility
+    borderWidth: 1,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 10,
+  },
+  progressContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+    height: 100, // Adjust height to fit your CircularProgress component
+  },
+  detailsContainer: {
+    marginTop: 10,
+  },
+  detailItem: {
+    marginBottom: 5,
+  },
+  detailText: {
+    fontSize: 14,
+    color: '#777',
+  },
+  cardButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 14,
   },
   link: {
     fontWeight: 'bold',

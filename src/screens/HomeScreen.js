@@ -1,47 +1,72 @@
 import React, { useEffect, useState } from 'react'
 import Background from '../components/Background-sm'
-import Header from '../components/Header'
-import Paragraph from '../components/Paragraph'
-import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../components/firebase'
 import { Text } from 'react-native-paper'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import Search from '../components/Search'
-import { Image, SafeAreaView, ScrollView, StyleSheet } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import { Button, Card } from 'react-native-paper'
-import challenges from '../assets/challenges'
+// import challenges from '../assets/challenges'
 import Spinner from 'react-native-loading-spinner-overlay'
 import AppHeader from '../components/AppHeader'
+import { toast } from 'react-toastify'
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
+
+// export const addPlayedGame = async (collectionId: string) => {
+//   try {
+//     if(!collectionId) return false;
+
+//     const collectionRef = doc(firebase.db, 'collection', collectionId);
+
+//     const updateObject = {
+//      ...
+//     };
+
+//     await setDoc(collectionRef, updateObject, { merge: true });
+
+//     return true;
+//   } catch (error) {
+//     return false;
+//   }
+// };
 
 export default function HomeScreen({ navigation }) {
-  const [userDetails, setUserDetails] = useState({})
-  const fetchUserData = async () => {
-    auth.onAuthStateChanged(async (user) => {
-      console.log(user)
-      const docRef = doc(db, 'Users', user.uid)
-      const docSnap = await getDoc(docRef)
-      if (docSnap.exists()) {
-        setUserDetails(docSnap.data())
+  const [userDetails, setUserDetails] = useState(null)
+  const [challenges, setChallenges] = useState([])
 
-        const jsonValue = JSON.stringify(docSnap.data())
-        await AsyncStorage.setItem('user', jsonValue)
+  // async function saveChallengesToFirestore(data) {
+  //   data.map((item) => {
+  //     setDoc(doc(db, 'Challenges', item.key), item)
+  //     console.log(`success ${item.key}`)
+  //   })
+  // }
 
-        console.log(docSnap.data())
-      } else {
-        console.log('User is not logged in')
-      }
-    })
+  // saveChallengesToFirestore(challenges)
+
+  const fetchChallenges = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'Challenges'))
+      querySnapshot.forEach((doc) => {
+        setChallenges((prevValue) => [...prevValue, doc.data()])
+      })
+    } catch (error) {
+      toast('500: NF, please retry')
+    }
   }
 
   useEffect(() => {
-    fetchUserData()
+    const userData = auth.currentUser
+    // console.log(userData)
+    if (userData) {
+      setUserDetails(userData)
+    }
+
+    fetchChallenges()
   }, [])
 
   return (
     <Background>
-      {userDetails ? (
+      {challenges && userDetails ? (
         <>
-          <AppHeader signedInUser={userDetails.name} />
+          <AppHeader signedInUser={userDetails.email} />
 
           <ScrollView>
             {challenges.map((item) => (
@@ -80,7 +105,7 @@ export default function HomeScreen({ navigation }) {
                     labelStyle={styles.buttontext}
                     mode="outlined"
                     onPress={() => {
-                      navigation.navigate('ChallengeScreen', item)
+                      navigation.navigate('ChallengeScreen', item.key)
                     }}
                   >
                     View Challenge
