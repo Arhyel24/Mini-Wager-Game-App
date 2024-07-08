@@ -5,8 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { theme } from './src/core/theme'
 // import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from './src/components/firebase'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import ToastManager, { toast } from 'toastify-react-native'
 import {
   StartScreen,
   LoginScreen,
@@ -79,7 +78,7 @@ export default function App() {
             component={ResetPasswordScreen}
           />
         </Stack.Navigator>
-        <ToastContainer />
+        <ToastManager />
       </NavigationContainer>
     </Provider>
   )

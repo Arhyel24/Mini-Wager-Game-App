@@ -4,7 +4,7 @@ import Spinner from 'react-native-loading-spinner-overlay'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../components/firebase'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { toast } from 'react-toastify'
+import { toast } from 'toastify-react-native'
 import {
   View,
   Text,

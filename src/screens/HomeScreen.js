@@ -7,7 +7,7 @@ import { Button, Card } from 'react-native-paper'
 // import challenges from '../assets/challenges'
 import Spinner from 'react-native-loading-spinner-overlay'
 import AppHeader from '../components/AppHeader'
-import { toast } from 'react-toastify'
+import { toast } from 'toastify-react-native'
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
 
 // export const addPlayedGame = async (collectionId: string) => {

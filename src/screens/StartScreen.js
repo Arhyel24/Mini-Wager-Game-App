@@ -4,7 +4,7 @@ import Logo from '../components/Logo'
 import Header from '../components/Header'
 import Button from '../components/Button'
 import Paragraph from '../components/Paragraph'
-import GoogleButton from 'react-google-button'
+// import GoogleButton from 'react-google-button'
 
 export default function StartScreen({ navigation }) {
   return (
@@ -12,7 +12,8 @@ export default function StartScreen({ navigation }) {
       <Logo />
       <Header>Mini Wager App</Header>
       <Paragraph>
-        The easiest way to complete in amazing challenges with your friends and family.
+        The easiest way to complete in amazing challenges with your friends and
+        family.
       </Paragraph>
       <Button
         mode="contained"
@@ -26,11 +27,11 @@ export default function StartScreen({ navigation }) {
       >
         Sign Up
       </Button>
-      <GoogleButton
+      {/* <GoogleButton
         onClick={() => {
           console.log('Google button clicked')
         }}
-      />
+      /> */}
     </Background>
   )
 }

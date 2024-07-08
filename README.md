@@ -1,49 +1,102 @@
-# React Native Login Template
+# Mini Wagering Game App
 
-This repo is proudly sponsored by:
+Welcome to the Mini Wagering Game App! This app allows users to participate in step challenges, track their progress with a pedometer, and compete with others on a leaderboard.
 
-<a href="https://reactnativemarket.com/" rel="nofollow" target="_blank">
-  <img src="https://raw.githubusercontent.com/venits/react-native-market/master/assets/banner.png" width="280"><br />
-  React Native Templates & Starter Kits and Apps for easier start.
-</a>
+## Features
 
-## Demo
+- **User Authentication**: Login or register to access the app.
+- **Challenges**: Browse and select challenges from a list.
+- **Pedometer Integration**: Start tracking your steps when you begin a challenge.
+- **Leaderboard**: View the leaderboard for each challenge to see how others are doing.
+- **Home Screen**: Accessible only after logging in, with three bottom tabs:
+  - **Home**: View available challenges.
+  - **History**: View past challenges and results.
+  - **Profile**: View and edit user profile details.
 
-https://simple-login-template.web.app
+## Getting Started
 
-## How to use?
+### Prerequisites
 
-1. Download or clone this repo.
+Make sure you have the following installed:
 
-2. Install dependencies.
+- [Node.js](https://nodejs.org/)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/)
 
-```js
-npm install
-// or
-yarn install
-```
+### Installation
 
-3. Run project on iOS / Android.
+1. **Clone the repository**:
 
-```js
- npm run ios // npm run android
- // or
- yarn ios // yarn android
-```
+   ```bash
+   git clone https://github.com/Arhyel24/Mini-Wager-Game-App.git
+   cd mini-wagering-game-app
+   ```
 
-## Preview
+2. **Install dependencies**:
 
-![homescreen](https://raw.githubusercontent.com/venits/react-native-market/master/assets/simple-login-template/homescreen.png)
-![login](https://raw.githubusercontent.com/venits/react-native-market/master/assets/simple-login-template/login.png)
-![register](https://raw.githubusercontent.com/venits/react-native-market/master/assets/simple-login-template/register.png)
-![forgot](https://raw.githubusercontent.com/venits/react-native-market/master/assets/simple-login-template/forgot.png)
-![dashboard](https://raw.githubusercontent.com/venits/react-native-market/master/assets/simple-login-template/dashboard.png)
+   ```bash
+   npm install
+   ```
 
-## Support
+### Running the App
 
-In case of any questions or problems, please contact me at:
-[hello@reactnativemarket.com](mailto:hello@reactnativemarket.com)
+1. **Start the Expo development server**:
 
-### Happy Coding 🚀
+   ```bash
+   expo start
+   ```
 
-### [ReactNativeMarket.com](http://reactnativemarket.com/)
+2. **Run the app**:
+
+   - On an iOS device or emulator: Press `i` in the terminal.
+   - On an Android device or emulator: Press `a` in the terminal.
+
+### Building the App
+
+To create a production build of the app:
+
+1. **Build the app using Expo**:
+
+   ```bash
+   expo build:android
+   # or
+   expo build:ios
+   ```
+
+2. Follow the instructions provided by Expo to download the build.
+
+## App Screens
+
+### Home Screen
+
+- Displays a list of available challenges.
+- Select a challenge to view details and start tracking your steps.
+
+### History Screen
+
+- View past challenges you've participated in.
+- See your results and compare them with others.
+
+### Profile Screen
+
+- View and edit your profile information.
+- Update your account details as needed.
+
+## Technologies Used
+
+- **React Native**: For building the mobile app.
+- **Expo**: For simplifying the development and building process.
+- **Firebase**: For authentication and database (if used).
+
+## Contributing
+
+Feel free to fork this repository and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contact
+
+For any questions or feedback, please contact us at arhyelphilip024@gmail.com.
+
+---
