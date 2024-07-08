@@ -7,26 +7,7 @@ import { Button, Card } from 'react-native-paper'
 // import challenges from '../assets/challenges'
 import Spinner from 'react-native-loading-spinner-overlay'
 import AppHeader from '../components/AppHeader'
-import { toast } from 'toastify-react-native'
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
-
-// export const addPlayedGame = async (collectionId: string) => {
-//   try {
-//     if(!collectionId) return false;
-
-//     const collectionRef = doc(firebase.db, 'collection', collectionId);
-
-//     const updateObject = {
-//      ...
-//     };
-
-//     await setDoc(collectionRef, updateObject, { merge: true });
-
-//     return true;
-//   } catch (error) {
-//     return false;
-//   }
-// };
 
 export default function HomeScreen({ navigation }) {
   const [userDetails, setUserDetails] = useState(null)
@@ -48,7 +29,7 @@ export default function HomeScreen({ navigation }) {
         setChallenges((prevValue) => [...prevValue, doc.data()])
       })
     } catch (error) {
-      toast('500: NF, please retry')
+      // console.log('500: NF, please retry')
     }
   }
 

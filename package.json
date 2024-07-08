@@ -1,25 +1,26 @@
 {
   "name": "miniwageringgameapp",
   "version": "1.0.0",
-  "main": "expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
     "@babel/core": "^7.20.0",
     "@expo/cli": "^0.18.22",
-    "@expo/config-plugins": "~6.0.0",
-    "@expo/prebuild-config": "~6.0.0",
+    "@expo/config": "^8.1.1",
+    "@expo/config-plugins": "^6.0.0",
+    "@expo/metro-config": "^0.10.0",
+    "@expo/prebuild-config": "^6.0.0",
     "@react-native-async-storage/async-storage": "1.17.11",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/bottom-tabs": "^6.6.0",
     "@react-navigation/material-bottom-tabs": "^6.2.28",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/stack": "^6.4.0",
-    "expo": "^48.0.21",
+    "expo": "~48.0.21",
     "expo-sensors": "~12.1.1",
     "expo-status-bar": "~1.4.4",
     "firebase": "^10.12.2",
@@ -39,7 +40,9 @@
     "react-native-svg": "13.4.0",
     "react-native-vector-icons": "^10.1.0",
     "react-native-web": "~0.18.10",
-    "toastify-react-native": "^5.0.0"
+    "toastify-react-native": "^5.0.0",
+    "expo-splash-screen": "~0.18.2",
+    "@expo/webpack-config": "^18.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

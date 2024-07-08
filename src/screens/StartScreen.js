@@ -12,7 +12,7 @@ export default function StartScreen({ navigation }) {
       <Logo />
       <Header>Mini Wager App</Header>
       <Paragraph>
-        The easiest way to complete in amazing challenges with your friends and
+        The easiest way to compete in amazing challenges with your friends and
         family.
       </Paragraph>
       <Button

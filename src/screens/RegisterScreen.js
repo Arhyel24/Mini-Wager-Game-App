@@ -9,7 +9,7 @@ import TextInput from '../components/TextInput'
 import BackButton from '../components/BackButton'
 import { doc, setDoc } from 'firebase/firestore'
 import { auth, db } from '../components/firebase'
-import { toast } from 'toastify-react-native'
+// import { Toast } from 'toastify-react-native'
 import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
@@ -38,12 +38,8 @@ export default function RegisterScreen({ navigation }) {
     try {
       await createUserWithEmailAndPassword(auth, email.value, password.value)
       const user = auth.currentUser
-      console.log(user)
+      // console.log(user)
       // console.log(user.email, name)
-
-      updateProfile(auth.currentUser, {
-        displayName: name.value,
-      })
 
       if (user) {
         await setDoc(doc(db, 'Users', user.uid), {
@@ -51,18 +47,19 @@ export default function RegisterScreen({ navigation }) {
           name: name.value,
         })
         setLoading(false)
-        toast('User Registered successfully!!')
-
         navigation.reset({
           index: 0,
           routes: [{ name: 'Dashboard' }],
         })
       }
-      console.log('User registered successfully!!')
+
+      updateProfile(auth.currentUser, {
+        displayName: name.value,
+      })
+      // console.log('User registered successfully!!')
     } catch (error) {
       console.log(error)
       setLoading(false)
-      toast('Failed to Register!!')
     }
   }
 

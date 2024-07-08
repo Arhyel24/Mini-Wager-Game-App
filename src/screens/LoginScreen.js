@@ -4,7 +4,6 @@ import { Text } from 'react-native-paper'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
 import Header from '../components/Header'
-import { toast } from 'toastify-react-native'
 import Button from '../components/Button'
 import TextInput from '../components/TextInput'
 import BackButton from '../components/BackButton'
@@ -34,14 +33,12 @@ export default function LoginScreen({ navigation }) {
     try {
       await signInWithEmailAndPassword(auth, email.value, password.value)
       setLoading(false)
-      toast('User logged in successfully!!')
       navigation.reset({
         index: 0,
         routes: [{ name: 'Dashboard' }],
       })
     } catch (error) {
       setLoading(false)
-      toast('Failed to login!!')
     }
   }
 

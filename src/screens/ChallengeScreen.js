@@ -3,7 +3,6 @@ import { Text, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Background from '../components/Background-sm'
 import { auth, db } from '../components/firebase'
 import { collection, doc, setDoc, getDoc } from 'firebase/firestore'
-import { toast } from 'toastify-react-native'
 import Header from '../components/Header'
 import BackButton from '../components/BackButton'
 import Spinner from 'react-native-loading-spinner-overlay'
@@ -53,7 +52,7 @@ const ChallengeScreen = ({ route, navigation }) => {
     if (docSnap.exists()) {
       setItem(docSnap.data())
     } else {
-      toast('No internet, please try again!!')
+      // console.log('No internet, please try again!!')
     }
 
     await Pedometer.requestPermissionsAsync()
@@ -70,31 +69,32 @@ const ChallengeScreen = ({ route, navigation }) => {
     }
   }, [])
 
-  // useEffect(() => {
-  //   let timer
-  //   if (pedometerStarted) {
-  //     Pedometer.watchStepCount(async (result) => {
-  //       updateStepcount(result.steps)
-  //     })
-  //     timer = setInterval(() => {
-  //       setRemainingTime((prevTime) => prevTime - 1000)
-  //     }, 1000)
-  //   } else {
-  //     clearInterval(timer)
-  //     // Pedometer.clearWatch()
-  //     saveSteps
-  //   }
-  //   return () => clearInterval(timer)
-  // }, [pedometerStarted])
+  useEffect(() => {
+    let timer
+    if (pedometerStarted) {
+      Pedometer.watchStepCount(async (result) => {
+        updateStepcount(result.steps)
+      })
+      timer = setInterval(() => {
+        setRemainingTime((prevTime) => prevTime - 1000)
+      }, 1000)
+    } else {
+      clearInterval(timer)
+      // Pedometer.clearWatch()
+      saveSteps
+    }
+    return () => clearInterval(timer)
+  }, [pedometerStarted])
 
   const startPedometer = async () => {
-    if (pedometeravailabilty) {
-      toast('Pedometer is available')
+    const available = await Pedometer.isAvailableAsync()
+    setpedometeravailability(available)
 
+    if (pedometeravailabilty) {
       setPedometerStarted(true)
       setRemainingTime(300000)
     } else {
-      toast('Pedometer is not available')
+      // console.log('Pedometer is not available')
     }
   }
 
@@ -103,16 +103,6 @@ const ChallengeScreen = ({ route, navigation }) => {
     setPedometerStarted(false)
     saveSteps()
   }
-
-  Pedometer.isAvailableAsync().then(
-    (result) => {
-      setpedometeravailability(result)
-    },
-    (error) => {
-      toast('Please restart the app')
-      // setpedometeravailability(error)
-    }
-  )
 
   const saveSteps = async () => {
     await setDoc(doc(challengesRef, key), {
@@ -139,33 +129,22 @@ const ChallengeScreen = ({ route, navigation }) => {
       <View style={styles.cardContainer}>
         <Text style={styles.cardTitle}>{item.title}</Text>
         <Text style={styles.cardDescription}>{item.description}</Text>
-        <View style={styles.progressContainer}>
-          {/* <CircularProgress
-            value={stepcount}
-            maxValue={item.steps}
-            radius={150}
-            textColor={'#ddd'}
-            activeStrokeColor={'#f39c12'}
-            inActiveStrokeColor={'#9859B6'}
-            inActiveStrokeOpacity={0.5}
-            inActiveStrokeWidth={30}
-            activeStrokeWidth={30}
-            title="Steps Count"
-            titleColor={'#ECF0F1'}
-            titleStyle={{ fontWeight: 'bold' }}
-          /> */}
+
+        <View style={[styles.detailsContainer, { alignItems: 'center' }]}>
           <CircularProgressBar
             selectedValue={stepcount}
             maxValue={item.steps}
-            radius={100}
-            activeStrokeColor="#0f4fff"
-            withGradient
+            radius={120}
+            activeStrokeColor="#007BFF"
+            strokeWidth={35}
+            textColor="#007BFF"
+            // withGradient
           />
         </View>
         <View style={styles.detailsContainer}>
           <View style={styles.detailItem}>
             <Text style={styles.detailText}>
-              Distance Covered: {item.distanceCovered || 0}
+              Distance Covered: {distanceCovered}
             </Text>
           </View>
           <View style={styles.detailItem}>
@@ -196,6 +175,11 @@ const ChallengeScreen = ({ route, navigation }) => {
             <Text style={styles.detailText}>End Date: {item.end_date}</Text>
           </View>
         </View>
+        {!pedometeravailabilty && (
+          <Text style={{ color: 'red', fontStyle: 'italic', fontSize: 12 }}>
+            Pedometer is unavailable
+          </Text>
+        )}
         {finished ? (
           <TouchableOpacity
             style={styles.cardButton}
@@ -246,25 +230,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: theme.colors.secondary,
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    margin: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5,
-  },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   progressContainer: {
-    alignItems: 'center',
-    marginBottom: 10,
+    // flex: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   detailsContainer: {
     flexDirection: 'row',
